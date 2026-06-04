@@ -7,6 +7,73 @@ import { playPreview, stopPreview } from '../utils/audio';
 const SWIPE_THRESHOLD = 80;
 const DAILY_GOAL      = 10;
 
+// ── Empty state ───────────────────────────────────────────────────────────────
+function DiscoverEmpty({ streak, discoverProgress }) {
+  const seen = discoverProgress.seen;
+  const prog = Math.min((seen / DAILY_GOAL) * 100, 100);
+
+  return (
+    <div className="discover-root">
+      <div className="logo-header">
+        <div className="logo-mark">
+          <span className="logo-gem">◆</span>
+          <span className="gradient-text" style={{ fontWeight: 900, fontSize: 22 }}>FindTheGems</span>
+        </div>
+        <div className="logo-sub">Discover music before it blows up</div>
+      </div>
+
+      <div className="discover-meta">
+        <span className="discover-progress-text">0 of {DAILY_GOAL} today</span>
+        <div className="discover-progress-bar">
+          <div className="discover-progress-fill" style={{ width: `${prog}%` }} />
+        </div>
+        <div className="streak-badge">🔥 {streak.count}</div>
+      </div>
+
+      {/* Ghost card stack */}
+      <div className="deck-area">
+        {[{ scale: 0.90, z: 0, ty: -28 }, { scale: 0.95, z: 1, ty: -14 }, { scale: 1, z: 2, ty: 0 }].map(({ scale, z, ty }, i) => (
+          <div
+            key={i}
+            className="song-card ghost-card"
+            style={{ transform: `scale(${scale}) translateY(${ty}px)`, zIndex: z, aspectRatio: '3/4.2', pointerEvents: 'none' }}
+          />
+        ))}
+
+        {/* Message overlaid on the ghost cards */}
+        <div style={{
+          position: 'absolute',
+          zIndex: 10,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
+          padding: '0 32px',
+          gap: 10,
+        }}>
+          <span className="gem-pulse" style={{ fontSize: 52, lineHeight: 1, marginBottom: 4 }}>◆</span>
+          <h2 style={{ fontSize: 22, fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.3px' }}>
+            No gems yet
+          </h2>
+          <p style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.65, maxWidth: 240 }}>
+            Songs are being added soon —<br />check back shortly!
+          </p>
+          <div className="coming-soon-badge" style={{ marginTop: 6 }}>
+            <span>◆</span> Coming soon
+          </div>
+        </div>
+      </div>
+
+      {/* Action buttons — present but dimmed */}
+      <div className="deck-actions">
+        <button className="action-btn action-skip" disabled style={{ opacity: 0.22, cursor: 'default' }}>✕</button>
+        <button className="action-btn action-save" disabled style={{ opacity: 0.22, cursor: 'default' }}>♥</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
 export default function DiscoverPage() {
   const [deck,      setDeck]      = useState([...songs]);
   const [offset,    setOffset]    = useState({ x: 0, y: 0 });
@@ -23,6 +90,11 @@ export default function DiscoverPage() {
   const topArtist = topSong ? getArtistById(topSong.artistId) : null;
 
   useEffect(() => () => stopPreview(), []);
+
+  // Render empty state when there are no songs in the catalogue
+  if (songs.length === 0) {
+    return <DiscoverEmpty streak={streak} discoverProgress={discoverProgress} />;
+  }
 
   const showToast = (type) => {
     setToast(type);
@@ -87,7 +159,6 @@ export default function DiscoverPage() {
 
   return (
     <div className="discover-root">
-      {/* Logo */}
       <div className="logo-header">
         <div className="logo-mark">
           <span className="logo-gem">◆</span>
@@ -96,7 +167,6 @@ export default function DiscoverPage() {
         <div className="logo-sub">Discover music before it blows up</div>
       </div>
 
-      {/* Progress + streak */}
       <div className="discover-meta">
         <span className="discover-progress-text">{Math.min(seen, DAILY_GOAL)} of {DAILY_GOAL} today</span>
         <div className="discover-progress-bar">
@@ -105,11 +175,9 @@ export default function DiscoverPage() {
         <div className="streak-badge">🔥 {streak.count}</div>
       </div>
 
-      {/* Deck */}
       <div className="deck-area">
         {toast && <div className={`discover-toast toast-${toast}`}>{toast === 'save' ? '♥ Saved!' : '✕ Skipped'}</div>}
 
-        {/* Back cards */}
         {deck.slice(1, 3).reverse().map((song, i) => {
           const scale = 0.93 - i * 0.025;
           const ty    = (1 - i) * -14;
@@ -122,7 +190,6 @@ export default function DiscoverPage() {
           );
         })}
 
-        {/* Top card */}
         {topSong && (
           <div
             key={topSong.id}
@@ -141,12 +208,10 @@ export default function DiscoverPage() {
             <div className="song-card-img" style={{ backgroundImage: `url(${topSong.coverArt})` }} />
             <div className="song-card-overlay" />
 
-            {/* Artist corner photo */}
             {topArtist && (
               <img src={topArtist.photo} alt={topArtist.name} className="song-card-artist-photo" />
             )}
 
-            {/* SAVE / SKIP stamps */}
             <div className="swipe-stamp stamp-save" style={{ opacity: saveOp }}>SAVE</div>
             <div className="swipe-stamp stamp-skip" style={{ opacity: skipOp }}>SKIP</div>
 
@@ -173,7 +238,6 @@ export default function DiscoverPage() {
         )}
       </div>
 
-      {/* Action buttons */}
       <div className="deck-actions">
         <button className="action-btn action-skip" onClick={() => doSwipe('left')} aria-label="Skip">✕</button>
         <button className={`action-btn action-save${savePop ? ' saved' : ''}`} onClick={() => doSwipe('right')} aria-label="Save">♥</button>

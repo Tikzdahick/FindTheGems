@@ -1188,6 +1188,71 @@ textarea.input { resize: none; min-height: 88px; line-height: 1.55; }
 /* ════════════════════════════════════════════════════════════════════════════
    ANIMATIONS / UTILITIES
    ════════════════════════════════════════════════════════════════════════════ */
+/* ── Empty / coming-soon states ─────────────────────────────────────────────── */
+
+/* Ghost card — placeholder shape with sweeping shimmer */
+.ghost-card {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.ghost-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    108deg,
+    transparent       25%,
+    rgba(124,58,237,0.06) 50%,
+    transparent       75%
+  );
+  background-size: 250% 100%;
+  animation: ghostSweep 3.2s ease-in-out infinite;
+}
+@keyframes ghostSweep {
+  0%   { background-position:  200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Pulsing gem used in empty states */
+.gem-pulse {
+  animation: gemGlowPulse 2.8s ease-in-out infinite;
+  display: inline-block;
+  filter: drop-shadow(0 0 14px rgba(245,158,11,0.4));
+}
+@keyframes gemGlowPulse {
+  0%, 100% {
+    transform: scale(1) rotate(-4deg);
+    filter: drop-shadow(0 0 10px rgba(245,158,11,0.35));
+  }
+  50% {
+    transform: scale(1.1) rotate(4deg);
+    filter: drop-shadow(0 0 28px rgba(245,158,11,0.8));
+  }
+}
+
+/* Coming-soon badge */
+.coming-soon-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.25);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold-light);
+  letter-spacing: 0.3px;
+  animation: badgePulse 3s ease-in-out infinite;
+}
+@keyframes badgePulse {
+  0%, 100% { border-color: rgba(245,158,11,0.25); }
+  50%       { border-color: rgba(245,158,11,0.55); }
+}
+
 .fade-in { animation: fadeIn 0.4s ease; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 

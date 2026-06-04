@@ -133,9 +133,10 @@ export default function SearchPage() {
             <div style={{ padding: '0 20px 100px' }}>
               {results.length === 0 ? (
                 <div className="empty-state">
-                  <div className="empty-icon">◆</div>
-                  <div className="empty-title">No gems found</div>
-                  <div className="empty-sub">Try different keywords, filters, or a wider listener range</div>
+                  <span className="gem-pulse empty-icon" style={{ fontSize: 40 }}>◆</span>
+                  <div className="empty-title">No gems yet</div>
+                  <div className="empty-sub">Songs are being added soon — check back shortly!</div>
+                  <div className="coming-soon-badge" style={{ marginTop: 4 }}>Coming soon</div>
                 </div>
               ) : (
                 results.map((song) => {

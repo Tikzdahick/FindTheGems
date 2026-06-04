@@ -96,24 +96,42 @@ export default function CommunityPage() {
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto' }}>
-        {/* Trending */}
-        <div style={{ paddingBottom: 4 }}>
-          <div style={{ padding: '0 20px 10px', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>🔥 Trending This Week</span>
-          </div>
-          <div className="trending-scroll">
-            {trending.map((post) => <TrendingCard key={post.id} post={post} />)}
-          </div>
-        </div>
+        {/* Trending — only shown when there are posts to trend */}
+        {trending.length > 0 && (
+          <>
+            <div style={{ paddingBottom: 4 }}>
+              <div style={{ padding: '0 20px 10px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>🔥 Trending This Week</span>
+              </div>
+              <div className="trending-scroll">
+                {trending.map((post) => <TrendingCard key={post.id} post={post} />)}
+              </div>
+            </div>
+            <div className="divider" style={{ marginBottom: 16 }} />
+          </>
+        )}
 
-        <div className="divider" style={{ marginBottom: 16 }} />
-
-        {/* All posts */}
+        {/* All posts — or empty state */}
         <div style={{ padding: '0 20px 100px' }}>
-          <p className="section-label" style={{ marginBottom: 12 }}>All Gems</p>
-          {communityPosts.map((post) => (
-            <PostCard key={post.id} post={post} onVote={votePost} />
-          ))}
+          {communityPosts.length > 0 ? (
+            <>
+              <p className="section-label" style={{ marginBottom: 12 }}>All Gems</p>
+              {communityPosts.map((post) => (
+                <PostCard key={post.id} post={post} onVote={votePost} />
+              ))}
+            </>
+          ) : (
+            <div className="empty-state" style={{ paddingTop: 48 }}>
+              <span className="gem-pulse empty-icon" style={{ fontSize: 44 }}>◆</span>
+              <div className="empty-title">No gems yet</div>
+              <p className="empty-sub">
+                Songs are being added soon —<br />check back shortly!
+              </p>
+              <div className="coming-soon-badge" style={{ marginTop: 8 }}>
+                Be the first to submit one ↓
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
