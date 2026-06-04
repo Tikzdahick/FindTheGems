@@ -70,7 +70,7 @@ export default function DiscoverPage() {
   const handlePlay = (e) => {
     e.stopPropagation();
     if (!topSong) return;
-    const started = playPreview(topSong.previewUrl, topSong.id, () => setPlayingId(null));
+    const started = playPreview(topSong.id, topSong.mood, () => setPlayingId(null));
     setPlayingId(started ? topSong.id : null);
   };
 
@@ -156,12 +156,16 @@ export default function DiscoverPage() {
                 <span className="chip chip-mood">{topSong.mood}</span>
               </div>
               <div className="song-card-title">{topSong.title}</div>
-              <div className="song-card-artist" onClick={goToArtist}>{topArtist?.name}</div>
+              <div className="song-card-artist" onPointerDown={(e) => e.stopPropagation()} onClick={goToArtist}>{topArtist?.name}</div>
               <div className="song-card-listeners">
                 <span className="listeners-dot" />
                 {formatListeners(topSong.monthlyListeners)} monthly listeners
               </div>
-              <button className="song-card-play" onClick={handlePlay}>
+              <button
+                className="song-card-play"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={handlePlay}
+              >
                 {playingId === topSong.id ? '⏹ Stop Preview' : '▶ Play Preview'}
               </button>
             </div>

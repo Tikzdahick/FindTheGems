@@ -32,9 +32,8 @@ export default function ArtistProfilePage() {
   );
 
   const handlePlay = (song) => {
-    if (playing === song.id) { stopPreview(); setPlaying(null); return; }
-    const ok = playPreview(song.previewUrl, song.id, () => setPlaying(null));
-    if (ok) setPlaying(song.id);
+    const ok = playPreview(song.id, song.mood, () => setPlaying(null));
+    setPlaying(ok ? song.id : null);
   };
   const back = () => { stopPreview(); setPlaying(null); navigate(-1); };
 
