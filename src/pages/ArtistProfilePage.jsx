@@ -58,8 +58,7 @@ export default function ArtistProfilePage() {
   const following = isFollowing(artist.id);
 
   const handlePlay = (song) => {
-    const src = song.previewUrl || song.mood || 'Chill';
-    const ok  = playPreview(song.id, src, () => setPlaying(null));
+    const ok  = playPreview(song.id, song.previewUrl, () => setPlaying(null));
     setPlaying(ok ? song.id : null);
   };
 

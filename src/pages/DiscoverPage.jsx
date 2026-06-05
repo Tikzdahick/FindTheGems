@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { songs as localSongs, getArtistById, formatListeners } from '../data/mockData';
 import { useApp } from '../context/AppContext';
 import { playPreview, stopPreview } from '../utils/audio';
-import { isConfigured, searchTrackPreview } from '../utils/spotify';
 import ShareModal from '../components/ShareModal';
 
 const SWIPE_THRESHOLD = 80;
@@ -83,24 +82,6 @@ export default function DiscoverPage() {
     setLoading(false);
   }, []);
 
-  // Pre-fetch the preview URL for whichever card is on top right now.
-  // Runs in the background so it's ready before the user taps Play.
-  useEffect(() => {
-    if (!topSong || topSong.previewUrl || !isConfigured()) return;
-    let active = true;
-
-    searchTrackPreview(topSong.title, topSong.artistName || '')
-      .then(url => {
-        if (url && active) {
-          // Patch just this song in the deck — preserves swipe progress
-          setDeck(prev => prev.map(s => s.id === topSong.id ? { ...s, previewUrl: url } : s));
-        }
-      })
-      .catch(() => {});
-
-    return () => { active = false; };
-  }, [topSong?.id]);
-
   useEffect(() => () => stopPreview(), []);
 
   // All hooks must be declared before any early return (Rules of Hooks)
@@ -146,11 +127,7 @@ export default function DiscoverPage() {
   const handlePlay = (e) => {
     e.stopPropagation();
     if (!topSong) return;
-    // previewUrl is populated by the background useEffect above.
-    // If it hasn't arrived yet, fall back to Web Audio chord synthesis.
-    const src = topSong.previewUrl || topSong.mood || 'Hype';
-    console.log('[Play]', topSong.title, '— source:', topSong.previewUrl ? 'Spotify preview URL' : 'Web Audio synthesis (mood: ' + (topSong.mood || 'Hype') + ')');
-    const started = playPreview(topSong.id, src, () => setPlayingId(null));
+    const started = playPreview(topSong.id, topSong.previewUrl, () => setPlayingId(null));
     setPlayingId(started ? topSong.id : null);
   };
 
