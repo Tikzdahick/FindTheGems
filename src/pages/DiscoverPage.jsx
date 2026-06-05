@@ -222,7 +222,9 @@ export default function DiscoverPage() {
 
       {scOpen && topSong && (
         <SoundCloudPlayer
-          soundcloudUrl={topSong.soundcloudUrl || topArtist?.social?.soundcloud || ''}
+          scEmbedUrl={topSong.scEmbedUrl || null}
+          soundcloudUrl={topSong.soundcloudUrl || null}
+          spotifyFallback={topSong.spotifyFallback || (topSong.artistSpotifyId ? `https://open.spotify.com/artist/${topSong.artistSpotifyId}` : null)}
           artistName={topArtist?.name || topSong.artistName || ''}
           songTitle={topSong.title}
           onClose={() => setScOpen(false)}

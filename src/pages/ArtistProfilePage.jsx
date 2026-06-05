@@ -158,7 +158,9 @@ export default function ArtistProfilePage() {
       {/* SoundCloud player — per song */}
       {scSong && (
         <SoundCloudPlayer
-          soundcloudUrl={scSong.soundcloudUrl || artist?.social?.soundcloud || ''}
+          scEmbedUrl={scSong.scEmbedUrl || null}
+          soundcloudUrl={scSong.soundcloudUrl || null}
+          spotifyFallback={scSong.spotifyFallback || (scSong.artistSpotifyId ? `https://open.spotify.com/artist/${scSong.artistSpotifyId}` : null)}
           artistName={artist?.name || ''}
           songTitle={scSong.title}
           onClose={() => setScSong(null)}

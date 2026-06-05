@@ -1,35 +1,37 @@
 // Bottom-sheet SoundCloud embed player.
-// soundcloudUrl should be the direct track URL (e.g. soundcloud.com/lackvill/batman-robin)
-// so the widget plays that specific song.
-// BashfortheWorld has no profile — opens YouTube search instead.
-// 1up Tee "Literally Doe" uses the artist page (track not publicly listed).
+//
+// scEmbedUrl: api.soundcloud.com/tracks/{id} — obtained from SoundCloud's own
+//   oEmbed API. Using the track ID (not the human URL) is what SoundCloud
+//   recommends and is what loads reliably in their widget.
+//
+// soundcloudUrl: human URL, used for the "Open on SoundCloud" link only.
+//
+// spotifyFallback: when no scEmbedUrl, opens Spotify artist page in new tab.
 
-const IS_SEARCH_URL = (url) => !url || url.includes('/search?') || url === '#';
-
-export default function SoundCloudPlayer({ soundcloudUrl, artistName, songTitle, onClose }) {
-  if (IS_SEARCH_URL(soundcloudUrl)) {
-    const query = songTitle ? `${songTitle} ${artistName}` : artistName;
-    window.open(
-      `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`,
-      '_blank',
-      'noopener,noreferrer'
-    );
+export default function SoundCloudPlayer({ scEmbedUrl, soundcloudUrl, spotifyFallback, artistName, songTitle, onClose }) {
+  // No SC embed available — open Spotify instead
+  if (!scEmbedUrl) {
+    const target = spotifyFallback || soundcloudUrl;
+    if (target) {
+      window.open(target, '_blank', 'noopener,noreferrer');
+    }
     onClose();
     return null;
   }
 
-  const embedSrc =
-    'https://w.soundcloud.com/player/?' +
-    new URLSearchParams({
-      url:           soundcloudUrl,
-      auto_play:     'true',
-      hide_related:  'true',
-      show_comments: 'false',
-      show_user:     'false',
-      show_reposts:  'false',
-      visual:        'false',
-      color:         '7c3aed',
-    }).toString();
+  // Build embed src exactly as SoundCloud's oEmbed generates it,
+  // using encodeURIComponent on the api.soundcloud.com/tracks/{id} URL.
+  const embedSrc = [
+    'https://w.soundcloud.com/player/?url=',
+    encodeURIComponent(scEmbedUrl),
+    '&auto_play=true',
+    '&hide_related=true',
+    '&show_comments=false',
+    '&show_user=false',
+    '&show_reposts=false',
+    '&visual=false',
+    '&color=7c3aed',
+  ].join('');
 
   return (
     <div
@@ -70,8 +72,9 @@ export default function SoundCloudPlayer({ soundcloudUrl, artistName, songTitle,
           </button>
         </div>
 
-        {/* SoundCloud widget */}
+        {/* SoundCloud widget — key forces remount when track changes */}
         <iframe
+          key={scEmbedUrl}
           src={embedSrc}
           width="100%"
           height="120"
@@ -82,17 +85,19 @@ export default function SoundCloudPlayer({ soundcloudUrl, artistName, songTitle,
         />
 
         {/* Open on SoundCloud */}
-        <a
-          href={soundcloudUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: 'block', textAlign: 'center', marginTop: 14,
-            fontSize: 13, color: 'var(--purple-light)', fontWeight: 600, textDecoration: 'none',
-          }}
-        >
-          Open on SoundCloud ↗
-        </a>
+        {soundcloudUrl && (
+          <a
+            href={soundcloudUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'block', textAlign: 'center', marginTop: 14,
+              fontSize: 13, color: 'var(--purple-light)', fontWeight: 600, textDecoration: 'none',
+            }}
+          >
+            Open on SoundCloud ↗
+          </a>
+        )}
       </div>
     </div>
   );

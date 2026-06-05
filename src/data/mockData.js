@@ -101,9 +101,11 @@ export const artists = [
 ];
 
 // ── Songs ─────────────────────────────────────────────────────────────────────
-// soundcloudUrl: verified exact track URLs (via oEmbed API).
-// BashfortheWorld has no SoundCloud profile — YouTube opens instead.
-// 1up Tee "Literally Doe" track not publicly listed — artist page used.
+// soundcloudUrl: human-readable SC track URL (used for "Open on SoundCloud" link)
+// scEmbedUrl:    api.soundcloud.com/tracks/{id} — the exact URL SoundCloud's own
+//                oEmbed API returns for its widget. Using the API ID ensures the
+//                iframe always loads the correct specific track.
+// spotifyFallback: Spotify artist page opened in new tab when SC embed unavailable
 export const songs = [
   // ── QUANTRELL ──────────────────────────────────────────────────────────────
   {
@@ -115,6 +117,7 @@ export const songs = [
     monthlyListeners: 560000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b2732a49687d302af1769ce571ae',
     soundcloudUrl:    'https://soundcloud.com/sincerelyquetee/yes-maam',
+    scEmbedUrl:       'https://api.soundcloud.com/tracks/2168184933',
     artistSpotifyId:  '6dCvTKdEJbcoV2IAL0H0W0',
     artistName:       'QUANTRELL',
   },
@@ -127,6 +130,7 @@ export const songs = [
     monthlyListeners: 560000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b2732a49687d302af1769ce571ae',
     soundcloudUrl:    'https://soundcloud.com/sincerelyquetee/its-the-cash-fault',
+    scEmbedUrl:       'https://api.soundcloud.com/tracks/2272152170',
     artistSpotifyId:  '6dCvTKdEJbcoV2IAL0H0W0',
     artistName:       'QUANTRELL',
   },
@@ -139,6 +143,7 @@ export const songs = [
     monthlyListeners: 560000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b2732a49687d302af1769ce571ae',
     soundcloudUrl:    'https://soundcloud.com/sincerelyquetee/cash-flow',
+    scEmbedUrl:       'https://api.soundcloud.com/tracks/2167759155',
     artistSpotifyId:  '6dCvTKdEJbcoV2IAL0H0W0',
     artistName:       'QUANTRELL',
   },
@@ -151,6 +156,7 @@ export const songs = [
     monthlyListeners: 560000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b2732a49687d302af1769ce571ae',
     soundcloudUrl:    'https://soundcloud.com/sincerelyquetee/underrated',
+    scEmbedUrl:       'https://api.soundcloud.com/tracks/2272176485',
     artistSpotifyId:  '6dCvTKdEJbcoV2IAL0H0W0',
     artistName:       'QUANTRELL',
   },
@@ -163,6 +169,7 @@ export const songs = [
     monthlyListeners: 560000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b2732a49687d302af1769ce571ae',
     soundcloudUrl:    'https://soundcloud.com/sincerelyquetee/punchin-da-clock',
+    scEmbedUrl:       'https://api.soundcloud.com/tracks/2308893218',
     artistSpotifyId:  '6dCvTKdEJbcoV2IAL0H0W0',
     artistName:       'QUANTRELL',
   },
@@ -175,10 +182,11 @@ export const songs = [
     monthlyListeners: 560000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b2732a49687d302af1769ce571ae',
     soundcloudUrl:    'https://soundcloud.com/sincerelyquetee/marshawn-lynch',
+    scEmbedUrl:       'https://api.soundcloud.com/tracks/2272178177',
     artistSpotifyId:  '6dCvTKdEJbcoV2IAL0H0W0',
     artistName:       'QUANTRELL',
   },
-  // ── 1up Tee ────────────────────────────────────────────────────────────────
+  // ── 1up Tee — track not on SC; Spotify fallback ────────────────────────────
   {
     id:               's7',
     title:            'Literally Doe',
@@ -187,11 +195,13 @@ export const songs = [
     mood:             'Hype',
     monthlyListeners: 530000,
     coverArt:         'https://i.scdn.co/image/ab67616d00001e02a852cf3ece1f626b4d727016',
-    soundcloudUrl:    'https://soundcloud.com/day1-tee',  // track not publicly listed; opens artist page
+    soundcloudUrl:    null,
+    scEmbedUrl:       null,
+    spotifyFallback:  'https://open.spotify.com/artist/1yqmgJoPnWJO0pxbZvxvCX',
     artistSpotifyId:  '1yqmgJoPnWJO0pxbZvxvCX',
     artistName:       '1up Tee',
   },
-  // ── BashfortheWorld — no SoundCloud; YouTube opens instead ─────────────────
+  // ── BashfortheWorld — no SC profile; Spotify fallback ─────────────────────
   {
     id:               's8',
     title:            'MVP',
@@ -200,7 +210,9 @@ export const songs = [
     mood:             'Hype',
     monthlyListeners: 2500000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b273be2929e045652fd263783202',
-    soundcloudUrl:    'https://soundcloud.com/search?q=bashfortheworld',
+    soundcloudUrl:    null,
+    scEmbedUrl:       null,
+    spotifyFallback:  'https://open.spotify.com/artist/2304Hcgi7OV6YL5Omhx6A4',
     artistSpotifyId:  '2304Hcgi7OV6YL5Omhx6A4',
     artistName:       'BashfortheWorld',
   },
@@ -212,7 +224,9 @@ export const songs = [
     mood:             'Hype',
     monthlyListeners: 2500000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b273be2929e045652fd263783202',
-    soundcloudUrl:    'https://soundcloud.com/search?q=bashfortheworld',
+    soundcloudUrl:    null,
+    scEmbedUrl:       null,
+    spotifyFallback:  'https://open.spotify.com/artist/2304Hcgi7OV6YL5Omhx6A4',
     artistSpotifyId:  '2304Hcgi7OV6YL5Omhx6A4',
     artistName:       'BashfortheWorld',
   },
@@ -226,6 +240,7 @@ export const songs = [
     monthlyListeners: 625000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b273a53772e3bee74081ab05fdf1',
     soundcloudUrl:    'https://soundcloud.com/lackvill/flexing-all-summer',
+    scEmbedUrl:       'https://api.soundcloud.com/tracks/2148071055',
     artistSpotifyId:  '4iFCJ4DmsDgP3vpNC1zcSx',
     artistName:       'Lackvill',
   },
@@ -238,6 +253,7 @@ export const songs = [
     monthlyListeners: 625000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b273bba3b5cb6d4be2ec9b54c26f',
     soundcloudUrl:    'https://soundcloud.com/lackvill/long-time-coming',
+    scEmbedUrl:       'https://api.soundcloud.com/tracks/2222981966',
     artistSpotifyId:  '4iFCJ4DmsDgP3vpNC1zcSx',
     artistName:       'Lackvill',
   },
@@ -250,6 +266,7 @@ export const songs = [
     monthlyListeners: 625000,
     coverArt:         'https://i1.sndcdn.com/artworks-wngUgukgnnnz-0-t500x500.jpg',
     soundcloudUrl:    'https://soundcloud.com/lackvill/no-jumper',
+    scEmbedUrl:       'https://api.soundcloud.com/tracks/2202997123',
     artistSpotifyId:  '4iFCJ4DmsDgP3vpNC1zcSx',
     artistName:       'Lackvill',
   },
@@ -262,6 +279,7 @@ export const songs = [
     monthlyListeners: 625000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b27347b21dd6b244ddbfcf601634',
     soundcloudUrl:    'https://soundcloud.com/lackvill/batman-robin',
+    scEmbedUrl:       'https://api.soundcloud.com/tracks/2106987396',
     artistSpotifyId:  '4iFCJ4DmsDgP3vpNC1zcSx',
     artistName:       'Lackvill',
   },
@@ -274,6 +292,7 @@ export const songs = [
     monthlyListeners: 625000,
     coverArt:         'https://i1.sndcdn.com/artworks-PS3h7X0Pamnp-0-t500x500.jpg',
     soundcloudUrl:    'https://soundcloud.com/lackvill/not-your-flow',
+    scEmbedUrl:       'https://api.soundcloud.com/tracks/2171273883',
     artistSpotifyId:  '4iFCJ4DmsDgP3vpNC1zcSx',
     artistName:       'Lackvill',
   },
@@ -286,6 +305,7 @@ export const songs = [
     monthlyListeners: 625000,
     coverArt:         'https://i1.sndcdn.com/artworks-hPqUvUNMFjp3-0-t500x500.jpg',
     soundcloudUrl:    'https://soundcloud.com/lackvill/way-2-grown',
+    scEmbedUrl:       'https://api.soundcloud.com/tracks/2181103799',
     artistSpotifyId:  '4iFCJ4DmsDgP3vpNC1zcSx',
     artistName:       'Lackvill',
   },
