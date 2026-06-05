@@ -222,8 +222,9 @@ export default function DiscoverPage() {
 
       {scOpen && topSong && (
         <SoundCloudPlayer
-          soundcloudUrl={topArtist?.social?.soundcloud || ''}
+          soundcloudUrl={topSong.soundcloudUrl || topArtist?.social?.soundcloud || ''}
           artistName={topArtist?.name || topSong.artistName || ''}
+          songTitle={topSong.title}
           onClose={() => setScOpen(false)}
         />
       )}

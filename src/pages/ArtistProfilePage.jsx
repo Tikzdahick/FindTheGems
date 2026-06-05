@@ -23,7 +23,7 @@ export default function ArtistProfilePage() {
   const [artist, setArtist] = useState(navArtist || null);
   const [songs,  setSongs]  = useState(navArtist ? getSongsByArtist(navArtist.id) : []);
   const [loading, setLoading] = useState(false);
-  const [scOpen,    setScOpen]    = useState(false);
+  const [scSong,    setScSong]    = useState(null); // song whose SC player is open
   const [shareItem, setShareItem] = useState(null);
   const { isFollowing, toggleFollow } = useApp();
 
@@ -58,7 +58,7 @@ export default function ArtistProfilePage() {
 
   const following = isFollowing(artist.id);
 
-  const handlePlay = () => setScOpen((prev) => !prev);
+  const handlePlay = (song) => setScSong((prev) => prev?.id === song.id ? null : song);
 
   const back = () => { navigate(-1); };
 
@@ -112,7 +112,7 @@ export default function ArtistProfilePage() {
             <p className="section-label">Top Songs</p>
             {songs.map((song) => (
               <div key={song.id} style={{ position: 'relative' }}>
-                <div className="song-row" onClick={handlePlay}>
+                <div className="song-row" onClick={() => handlePlay(song)}>
                   <img src={song.coverArt} alt={song.title} className="song-row-thumb" />
                   <div className="song-row-info">
                     <div className="song-row-title">{song.title}</div>
@@ -126,7 +126,7 @@ export default function ArtistProfilePage() {
                     >
                       ↗
                     </button>
-                    <button className="play-circle" tabIndex={-1}>▶</button>
+                    <button className="play-circle" tabIndex={-1}>{scSong?.id === song.id ? '■' : '▶'}</button>
                   </div>
                 </div>
               </div>
@@ -155,12 +155,13 @@ export default function ArtistProfilePage() {
         </div>
       </div>
 
-      {/* SoundCloud player */}
-      {scOpen && (
+      {/* SoundCloud player — per song */}
+      {scSong && (
         <SoundCloudPlayer
-          soundcloudUrl={artist?.social?.soundcloud || ''}
+          soundcloudUrl={scSong.soundcloudUrl || artist?.social?.soundcloud || ''}
           artistName={artist?.name || ''}
-          onClose={() => setScOpen(false)}
+          songTitle={scSong.title}
+          onClose={() => setScSong(null)}
         />
       )}
 

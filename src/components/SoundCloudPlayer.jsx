@@ -1,14 +1,16 @@
 // Bottom-sheet SoundCloud embed player.
-// For artists with a real SoundCloud profile, shows the SC widget iframe.
-// For artists with only a search URL (BashfortheWorld), opens a YouTube search tab.
+// soundcloudUrl should be the direct track URL (e.g. soundcloud.com/lackvill/batman-robin)
+// so the widget plays that specific song.
+// BashfortheWorld has no profile — opens YouTube search instead.
+// 1up Tee "Literally Doe" uses the artist page (track not publicly listed).
 
 const IS_SEARCH_URL = (url) => !url || url.includes('/search?') || url === '#';
 
-export default function SoundCloudPlayer({ soundcloudUrl, artistName, onClose }) {
+export default function SoundCloudPlayer({ soundcloudUrl, artistName, songTitle, onClose }) {
   if (IS_SEARCH_URL(soundcloudUrl)) {
-    // Open YouTube search and close immediately — no bottom sheet needed
+    const query = songTitle ? `${songTitle} ${artistName}` : artistName;
     window.open(
-      `https://www.youtube.com/results?search_query=${encodeURIComponent(artistName)}`,
+      `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`,
       '_blank',
       'noopener,noreferrer'
     );
@@ -16,7 +18,6 @@ export default function SoundCloudPlayer({ soundcloudUrl, artistName, onClose })
     return null;
   }
 
-  // Encode the profile URL for the SC widget
   const embedSrc =
     'https://w.soundcloud.com/player/?' +
     new URLSearchParams({
@@ -24,10 +25,10 @@ export default function SoundCloudPlayer({ soundcloudUrl, artistName, onClose })
       auto_play:     'true',
       hide_related:  'true',
       show_comments: 'false',
-      show_user:     'true',
+      show_user:     'false',
       show_reposts:  'false',
       visual:        'false',
-      color:         '7c3aed',   // purple — hex without #
+      color:         '7c3aed',
     }).toString();
 
   return (
@@ -44,19 +45,21 @@ export default function SoundCloudPlayer({ soundcloudUrl, artistName, onClose })
         <div className="modal-handle" />
 
         {/* Header */}
-        <div style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          marginBottom: 16,
-        }}>
-          <div>
-            <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--text)' }}>{artistName}</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <div style={{ minWidth: 0 }}>
+            {songTitle && (
+              <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {songTitle}
+              </p>
+            )}
             <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>
-              🎵 on SoundCloud
+              {artistName} · on SoundCloud 🎵
             </p>
           </div>
           <button
             onClick={onClose}
             style={{
+              flexShrink: 0, marginLeft: 12,
               background: 'var(--glass)', border: '1px solid var(--glass-border)',
               borderRadius: '50%', width: 34, height: 34,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -75,10 +78,10 @@ export default function SoundCloudPlayer({ soundcloudUrl, artistName, onClose })
           frameBorder="0"
           allow="autoplay"
           style={{ borderRadius: 10, display: 'block' }}
-          title={`${artistName} on SoundCloud`}
+          title={songTitle ? `${songTitle} by ${artistName}` : artistName}
         />
 
-        {/* Open full profile link */}
+        {/* Open on SoundCloud */}
         <a
           href={soundcloudUrl}
           target="_blank"
@@ -88,7 +91,7 @@ export default function SoundCloudPlayer({ soundcloudUrl, artistName, onClose })
             fontSize: 13, color: 'var(--purple-light)', fontWeight: 600, textDecoration: 'none',
           }}
         >
-          Open full profile on SoundCloud ↗
+          Open on SoundCloud ↗
         </a>
       </div>
     </div>

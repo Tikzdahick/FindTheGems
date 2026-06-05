@@ -101,9 +101,9 @@ export const artists = [
 ];
 
 // ── Songs ─────────────────────────────────────────────────────────────────────
-// previewUrl: real archive.org MP3s (CORS-enabled, no auth needed).
-// These are openly licensed hip-hop instrumentals used as audio placeholders
-// until the actual artist tracks become available for streaming.
+// soundcloudUrl: verified exact track URLs (via oEmbed API).
+// BashfortheWorld has no SoundCloud profile — YouTube opens instead.
+// 1up Tee "Literally Doe" track not publicly listed — artist page used.
 export const songs = [
   // ── QUANTRELL ──────────────────────────────────────────────────────────────
   {
@@ -114,7 +114,7 @@ export const songs = [
     mood:             'Hype',
     monthlyListeners: 560000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b2732a49687d302af1769ce571ae',
-    previewUrl:       'https://archive.org/download/Hiphop-Farwest_-_Beatz/DJ_Farwest_-_50_Yards.mp3',
+    soundcloudUrl:    'https://soundcloud.com/sincerelyquetee/yes-maam',
     artistSpotifyId:  '6dCvTKdEJbcoV2IAL0H0W0',
     artistName:       'QUANTRELL',
   },
@@ -126,7 +126,7 @@ export const songs = [
     mood:             'Hype',
     monthlyListeners: 560000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b2732a49687d302af1769ce571ae',
-    previewUrl:       'https://archive.org/download/Hiphop-Farwest_-_Beatz/DJ_Farwest_-_Arabic.mp3',
+    soundcloudUrl:    'https://soundcloud.com/sincerelyquetee/its-the-cash-fault',
     artistSpotifyId:  '6dCvTKdEJbcoV2IAL0H0W0',
     artistName:       'QUANTRELL',
   },
@@ -138,7 +138,7 @@ export const songs = [
     mood:             'Hype',
     monthlyListeners: 560000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b2732a49687d302af1769ce571ae',
-    previewUrl:       'https://archive.org/download/Hiphop-Farwest_-_Beatz/DJ_Farwest_-_Autumn.mp3',
+    soundcloudUrl:    'https://soundcloud.com/sincerelyquetee/cash-flow',
     artistSpotifyId:  '6dCvTKdEJbcoV2IAL0H0W0',
     artistName:       'QUANTRELL',
   },
@@ -150,7 +150,7 @@ export const songs = [
     mood:             'Hype',
     monthlyListeners: 560000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b2732a49687d302af1769ce571ae',
-    previewUrl:       'https://archive.org/download/Hiphop-Farwest_-_Beatz/DJ_Farwest_-_BackBeat.mp3',
+    soundcloudUrl:    'https://soundcloud.com/sincerelyquetee/underrated',
     artistSpotifyId:  '6dCvTKdEJbcoV2IAL0H0W0',
     artistName:       'QUANTRELL',
   },
@@ -162,7 +162,7 @@ export const songs = [
     mood:             'Hype',
     monthlyListeners: 560000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b2732a49687d302af1769ce571ae',
-    previewUrl:       'https://archive.org/download/Hiphop-Farwest_-_Headz_Of_Tomorrow/1000_Sassa_-_Schwiz_het_keis_Gheddo.mp3',
+    soundcloudUrl:    'https://soundcloud.com/sincerelyquetee/punchin-da-clock',
     artistSpotifyId:  '6dCvTKdEJbcoV2IAL0H0W0',
     artistName:       'QUANTRELL',
   },
@@ -174,7 +174,7 @@ export const songs = [
     mood:             'Hype',
     monthlyListeners: 560000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b2732a49687d302af1769ce571ae',
-    previewUrl:       'https://archive.org/download/Hiphop-Farwest_-_Headz_Of_Tomorrow/2Hoch4_-_Geht_Da_Was.mp3',
+    soundcloudUrl:    'https://soundcloud.com/sincerelyquetee/marshawn-lynch',
     artistSpotifyId:  '6dCvTKdEJbcoV2IAL0H0W0',
     artistName:       'QUANTRELL',
   },
@@ -187,11 +187,11 @@ export const songs = [
     mood:             'Hype',
     monthlyListeners: 530000,
     coverArt:         'https://i.scdn.co/image/ab67616d00001e02a852cf3ece1f626b4d727016',
-    previewUrl:       'https://archive.org/download/Hiphop-Farwest_-_Headz_Of_Tomorrow/3rd-music_-_3te-mucke.mp3',
+    soundcloudUrl:    'https://soundcloud.com/day1-tee',  // track not publicly listed; opens artist page
     artistSpotifyId:  '1yqmgJoPnWJO0pxbZvxvCX',
     artistName:       '1up Tee',
   },
-  // ── BashfortheWorld ────────────────────────────────────────────────────────
+  // ── BashfortheWorld — no SoundCloud; YouTube opens instead ─────────────────
   {
     id:               's8',
     title:            'MVP',
@@ -200,7 +200,7 @@ export const songs = [
     mood:             'Hype',
     monthlyListeners: 2500000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b273be2929e045652fd263783202',
-    previewUrl:       'https://archive.org/download/Hiphop-Farwest_-_Headz_Of_Tomorrow/Abenick_-_Wow.mp3',
+    soundcloudUrl:    'https://soundcloud.com/search?q=bashfortheworld',
     artistSpotifyId:  '2304Hcgi7OV6YL5Omhx6A4',
     artistName:       'BashfortheWorld',
   },
@@ -212,7 +212,7 @@ export const songs = [
     mood:             'Hype',
     monthlyListeners: 2500000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b273be2929e045652fd263783202',
-    previewUrl:       'https://archive.org/download/K-MasterStrikeBeatz-UnitedStateOfAlbania_201902/01.%20Bizele.mp3',
+    soundcloudUrl:    'https://soundcloud.com/search?q=bashfortheworld',
     artistSpotifyId:  '2304Hcgi7OV6YL5Omhx6A4',
     artistName:       'BashfortheWorld',
   },
@@ -225,7 +225,7 @@ export const songs = [
     mood:             'Hype',
     monthlyListeners: 625000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b273a53772e3bee74081ab05fdf1',
-    previewUrl:       'https://archive.org/download/K-MasterStrikeBeatz-UnitedStateOfAlbania_201902/02.%20Boulevard.mp3',
+    soundcloudUrl:    'https://soundcloud.com/lackvill/flexing-all-summer',
     artistSpotifyId:  '4iFCJ4DmsDgP3vpNC1zcSx',
     artistName:       'Lackvill',
   },
@@ -237,7 +237,7 @@ export const songs = [
     mood:             'Hype',
     monthlyListeners: 625000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b273bba3b5cb6d4be2ec9b54c26f',
-    previewUrl:       'https://archive.org/download/K-MasterStrikeBeatz-UnitedStateOfAlbania_201902/03.%20Dope%20Man%20%28Feat.%20Lluni%29.mp3',
+    soundcloudUrl:    'https://soundcloud.com/lackvill/long-time-coming',
     artistSpotifyId:  '4iFCJ4DmsDgP3vpNC1zcSx',
     artistName:       'Lackvill',
   },
@@ -249,7 +249,7 @@ export const songs = [
     mood:             'Hype',
     monthlyListeners: 625000,
     coverArt:         'https://i1.sndcdn.com/artworks-wngUgukgnnnz-0-t500x500.jpg',
-    previewUrl:       'https://archive.org/download/K-MasterStrikeBeatz-UnitedStateOfAlbania_201902/04.%20Semafori.mp3',
+    soundcloudUrl:    'https://soundcloud.com/lackvill/no-jumper',
     artistSpotifyId:  '4iFCJ4DmsDgP3vpNC1zcSx',
     artistName:       'Lackvill',
   },
@@ -261,7 +261,7 @@ export const songs = [
     mood:             'Hype',
     monthlyListeners: 625000,
     coverArt:         'https://i.scdn.co/image/ab67616d0000b27347b21dd6b244ddbfcf601634',
-    previewUrl:       'https://archive.org/download/Hiphop-Farwest_-_Beatz01/DJ_Farwest_-_0_Access.mp3',
+    soundcloudUrl:    'https://soundcloud.com/lackvill/batman-robin',
     artistSpotifyId:  '4iFCJ4DmsDgP3vpNC1zcSx',
     artistName:       'Lackvill',
   },
@@ -273,7 +273,7 @@ export const songs = [
     mood:             'Hype',
     monthlyListeners: 625000,
     coverArt:         'https://i1.sndcdn.com/artworks-PS3h7X0Pamnp-0-t500x500.jpg',
-    previewUrl:       'https://archive.org/download/Hiphop-Farwest_-_Beatz01/DJ_Farwest_-_10_Cent.mp3',
+    soundcloudUrl:    'https://soundcloud.com/lackvill/not-your-flow',
     artistSpotifyId:  '4iFCJ4DmsDgP3vpNC1zcSx',
     artistName:       'Lackvill',
   },
@@ -285,7 +285,7 @@ export const songs = [
     mood:             'Hype',
     monthlyListeners: 625000,
     coverArt:         'https://i1.sndcdn.com/artworks-hPqUvUNMFjp3-0-t500x500.jpg',
-    previewUrl:       'https://archive.org/download/Hiphop-Farwest_-_Beatz01/DJ_Farwest_-_6_Finger_Joe.mp3',
+    soundcloudUrl:    'https://soundcloud.com/lackvill/way-2-grown',
     artistSpotifyId:  '4iFCJ4DmsDgP3vpNC1zcSx',
     artistName:       'Lackvill',
   },
