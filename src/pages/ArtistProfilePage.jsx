@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { getSongsByArtist, formatListeners } from '../data/mockData';
 import { useApp } from '../context/AppContext';
 import { playPreview, stopPreview } from '../utils/audio';
-import { isConfigured, fetchArtistProfile } from '../utils/spotify';
+import { isConfigured, fetchArtistPhoto } from '../utils/spotify';
 import ShareModal from '../components/ShareModal';
 
 const SOCIAL = {
@@ -26,19 +26,23 @@ export default function ArtistProfilePage() {
   const [shareItem, setShareItem] = useState(null);
   const { isFollowing, toggleFollow } = useApp();
 
-  // Enrich with Spotify data if we have a spotifyId
+  // Fetch the high-res Spotify artist photo (640px).
+  // The Client Credentials API returns images but not followers/genres/popularity,
+  // so we only take the photo and keep bio/genres/listeners from mockData.
   useEffect(() => {
     const spotifyId = navArtist?.spotifyId || (navArtist?.id?.startsWith('sp_') ? navArtist.id.slice(3) : null);
     if (!spotifyId || !isConfigured()) return;
+    let active = true;
 
-    setLoading(true);
-    fetchArtistProfile(spotifyId)
-      .then(({ profile, songs: spSongs }) => {
-        setArtist(profile);
-        if (spSongs.length > 0) setSongs(spSongs);
+    fetchArtistPhoto(spotifyId)
+      .then(photo => {
+        if (photo && active) {
+          setArtist(prev => prev ? { ...prev, photo } : prev);
+        }
       })
-      .catch(() => {}) // keep nav data on failure
-      .finally(() => setLoading(false));
+      .catch(() => {});
+
+    return () => { active = false; };
   }, [navArtist?.id]);
 
   useEffect(() => () => stopPreview(), []);

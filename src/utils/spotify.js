@@ -156,6 +156,41 @@ async function batchArtistGenres(artistIds) {
   return Object.fromEntries((data.artists || []).map(a => [a.id, a.genres || []]));
 }
 
+// ── Preview URL cache (in-memory, lives for the session) ─────────────────────
+const _previewCache = new Map();
+
+// Search Spotify for a specific track by title + artist and return its 30s preview URL.
+// Results are cached so repeated calls (e.g. deck re-renders) hit no network.
+export async function searchTrackPreview(title, artistName) {
+  const key = `${title.toLowerCase()}::${(artistName || '').toLowerCase()}`;
+  if (_previewCache.has(key)) return _previewCache.get(key);
+
+  try {
+    const q = artistName
+      ? `track:"${title}" artist:"${artistName}"`
+      : `track:"${title}"`;
+    const data  = await api(`/search?q=${encodeURIComponent(q)}&type=track&limit=5&market=US`);
+    const items = data.tracks?.items || [];
+
+    // Prefer exact title + artist match, fall back to first result
+    const exact = items.find(t =>
+      t.name.toLowerCase() === title.toLowerCase() &&
+      t.artists.some(a =>
+        (artistName || '').toLowerCase().includes(a.name.toLowerCase()) ||
+        a.name.toLowerCase().includes((artistName || '').toLowerCase())
+      )
+    );
+    const match = exact || items.find(t => t.preview_url) || items[0];
+    const url   = match?.preview_url || null;
+
+    _previewCache.set(key, url);
+    return url;
+  } catch {
+    _previewCache.set(key, null);
+    return null;
+  }
+}
+
 // ── Public fetch functions ────────────────────────────────────────────────────
 
 // Discover feed — underrated tracks (popularity < maxPop) across given genres
@@ -217,4 +252,17 @@ export async function fetchArtistProfile(spotifyId) {
     .slice(0, 5)
     .map(t => trackToSong(t, artist.genres || []));
   return { profile, songs };
+}
+
+// Fetch only the artist's highest-resolution Spotify photo.
+// The Client Credentials flow returns name + images but not followers/genres;
+// callers should merge this into existing mockData rather than replacing it.
+export async function fetchArtistPhoto(spotifyId) {
+  try {
+    const artist = await api(`/artists/${spotifyId}`);
+    // Spotify returns images sorted largest first (640px, 320px, 160px)
+    return artist.images?.[0]?.url || null;
+  } catch {
+    return null;
+  }
 }

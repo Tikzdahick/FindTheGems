@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { songs as localSongs, getArtistById, formatListeners } from '../data/mockData';
 import { useApp } from '../context/AppContext';
 import { playPreview, stopPreview } from '../utils/audio';
-import { isConfigured, fetchDiscoverTracks } from '../utils/spotify';
+import { isConfigured, searchTrackPreview } from '../utils/spotify';
 import ShareModal from '../components/ShareModal';
 
 const SWIPE_THRESHOLD = 80;
@@ -77,38 +77,29 @@ export default function DiscoverPage() {
   const topSong   = deck[0];
   const topArtist = topSong ? getArtistById(topSong.artistId) : null;
 
-  // Load initial deck
+  // Load initial deck — always use the curated local song list
   useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-
-    const load = async () => {
-      // 1. Try Spotify
-      if (isConfigured()) {
-        try {
-          const tracks = await fetchDiscoverTracks(profile.selectedGenres || [], 50, 20);
-          if (!cancelled && tracks.length > 0) { setDeck(tracks); setLoading(false); return; }
-        } catch (e) { console.warn('Spotify discover failed:', e); }
-      }
-      // 2. Fall back to local songs
-      if (!cancelled) { setDeck([...localSongs]); setLoading(false); }
-    };
-
-    load();
-    return () => { cancelled = true; };
+    setDeck([...localSongs]);
+    setLoading(false);
   }, []);
 
-  // Fetch more when deck is low
+  // Pre-fetch the preview URL for whichever card is on top right now.
+  // Runs in the background so it's ready before the user taps Play.
   useEffect(() => {
-    if (deck.length < 4 && !loading && deck.length > 0 && isConfigured()) {
-      fetchDiscoverTracks(profile.selectedGenres || [], 50, 15)
-        .then((more) => setDeck((p) => {
-          const existingIds = new Set(p.map((s) => s.id));
-          return [...p, ...more.filter((s) => !existingIds.has(s.id))];
-        }))
-        .catch(() => {});
-    }
-  }, [deck.length]);
+    if (!topSong || topSong.previewUrl || !isConfigured()) return;
+    let active = true;
+
+    searchTrackPreview(topSong.title, topSong.artistName || '')
+      .then(url => {
+        if (url && active) {
+          // Patch just this song in the deck — preserves swipe progress
+          setDeck(prev => prev.map(s => s.id === topSong.id ? { ...s, previewUrl: url } : s));
+        }
+      })
+      .catch(() => {});
+
+    return () => { active = false; };
+  }, [topSong?.id]);
 
   useEffect(() => () => stopPreview(), []);
 
@@ -155,7 +146,9 @@ export default function DiscoverPage() {
   const handlePlay = (e) => {
     e.stopPropagation();
     if (!topSong) return;
-    const src     = topSong.previewUrl || topSong.mood || 'Chill';
+    // previewUrl is populated by the background useEffect above.
+    // If it hasn't arrived yet, fall back to Web Audio chord synthesis.
+    const src     = topSong.previewUrl || topSong.mood || 'Hype';
     const started = playPreview(topSong.id, src, () => setPlayingId(null));
     setPlayingId(started ? topSong.id : null);
   };
