@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getSongsByArtist, formatListeners } from '../data/mockData';
 import { useApp } from '../context/AppContext';
-import { playPreview, stopPreview } from '../utils/audio';
+import { stopPreview } from '../utils/audio';
 import { isConfigured, fetchArtistPhoto } from '../utils/spotify';
 import ShareModal from '../components/ShareModal';
+import SoundCloudPlayer from '../components/SoundCloudPlayer';
 
 const SOCIAL = {
   spotify:    { icon: '🎵', label: 'Spotify' },
@@ -22,7 +23,7 @@ export default function ArtistProfilePage() {
   const [artist, setArtist] = useState(navArtist || null);
   const [songs,  setSongs]  = useState(navArtist ? getSongsByArtist(navArtist.id) : []);
   const [loading, setLoading] = useState(false);
-  const [playing, setPlaying] = useState(null);
+  const [scOpen,    setScOpen]    = useState(false);
   const [shareItem, setShareItem] = useState(null);
   const { isFollowing, toggleFollow } = useApp();
 
@@ -57,12 +58,9 @@ export default function ArtistProfilePage() {
 
   const following = isFollowing(artist.id);
 
-  const handlePlay = (song) => {
-    const ok  = playPreview(song.id, song.previewUrl, () => setPlaying(null));
-    setPlaying(ok ? song.id : null);
-  };
+  const handlePlay = () => setScOpen((prev) => !prev);
 
-  const back = () => { stopPreview(); setPlaying(null); navigate(-1); };
+  const back = () => { navigate(-1); };
 
   return (
     <div style={{ minHeight: '100%', paddingBottom: 40 }} className="fade-in">
@@ -114,7 +112,7 @@ export default function ArtistProfilePage() {
             <p className="section-label">Top Songs</p>
             {songs.map((song) => (
               <div key={song.id} style={{ position: 'relative' }}>
-                <div className="song-row" onClick={() => handlePlay(song)}>
+                <div className="song-row" onClick={handlePlay}>
                   <img src={song.coverArt} alt={song.title} className="song-row-thumb" />
                   <div className="song-row-info">
                     <div className="song-row-title">{song.title}</div>
@@ -128,7 +126,7 @@ export default function ArtistProfilePage() {
                     >
                       ↗
                     </button>
-                    <button className="play-circle" tabIndex={-1}>{playing === song.id ? '⏹' : '▶'}</button>
+                    <button className="play-circle" tabIndex={-1}>▶</button>
                   </div>
                 </div>
               </div>
@@ -156,6 +154,15 @@ export default function ArtistProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* SoundCloud player */}
+      {scOpen && (
+        <SoundCloudPlayer
+          soundcloudUrl={artist?.social?.soundcloud || ''}
+          artistName={artist?.name || ''}
+          onClose={() => setScOpen(false)}
+        />
+      )}
 
       {/* Share modals */}
       {shareItem?.type === 'song' && (

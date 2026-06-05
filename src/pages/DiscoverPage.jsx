@@ -2,8 +2,9 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { songs as localSongs, getArtistById, formatListeners } from '../data/mockData';
 import { useApp } from '../context/AppContext';
-import { playPreview, stopPreview } from '../utils/audio';
+import { stopPreview } from '../utils/audio';
 import ShareModal from '../components/ShareModal';
+import SoundCloudPlayer from '../components/SoundCloudPlayer';
 
 const SWIPE_THRESHOLD = 80;
 const DAILY_GOAL      = 10;
@@ -66,9 +67,9 @@ export default function DiscoverPage() {
   const [dragging,  setDragging]  = useState(false);
   const [animating, setAnimating] = useState(false);
   const [toast,     setToast]     = useState(null);
-  const [playingId, setPlayingId] = useState(null);
   const [savePop,   setSavePop]   = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [scOpen,    setScOpen]    = useState(false);
   const startRef  = useRef({ x: 0, y: 0 });
   const navigate  = useNavigate();
   const { saveSong, discoverProgress, incrementDiscover, streak, profile } = useApp();
@@ -95,7 +96,7 @@ export default function DiscoverPage() {
   const doSwipe = useCallback((dir) => {
     if (animating || !topSong) return;
     setAnimating(true);
-    stopPreview(); setPlayingId(null);
+    setScOpen(false); // close SoundCloud player on swipe
     if (dir === 'right') { saveSong(topSong); setSavePop(true); setTimeout(() => setSavePop(false), 350); }
     showToast(dir === 'right' ? 'save' : 'skip');
     setOffset({ x: dir === 'right' ? 650 : -650, y: 0 });
@@ -127,8 +128,7 @@ export default function DiscoverPage() {
   const handlePlay = (e) => {
     e.stopPropagation();
     if (!topSong) return;
-    const started = playPreview(topSong.id, topSong.previewUrl, () => setPlayingId(null));
-    setPlayingId(started ? topSong.id : null);
+    setScOpen((prev) => !prev); // toggle the SoundCloud player
   };
 
   const goToArtist = (e) => {
@@ -208,7 +208,7 @@ export default function DiscoverPage() {
                 {formatListeners(topSong.monthlyListeners)} monthly listeners
               </div>
               <button className="song-card-play" onPointerDown={(e) => e.stopPropagation()} onClick={handlePlay}>
-                {playingId === topSong.id ? '⏹ Stop Preview' : '▶ Play Preview'}
+                {scOpen ? '✕ Close Player' : '▶ Play Preview'}
               </button>
             </div>
           </div>
@@ -219,6 +219,14 @@ export default function DiscoverPage() {
         <button className="action-btn action-skip" onClick={() => doSwipe('left')} aria-label="Skip">✕</button>
         <button className={`action-btn action-save${savePop ? ' saved' : ''}`} onClick={() => doSwipe('right')} aria-label="Save">♥</button>
       </div>
+
+      {scOpen && topSong && (
+        <SoundCloudPlayer
+          soundcloudUrl={topArtist?.social?.soundcloud || ''}
+          artistName={topArtist?.name || topSong.artistName || ''}
+          onClose={() => setScOpen(false)}
+        />
+      )}
 
       {shareOpen && topSong && (
         <ShareModal song={topSong} artistOverride={topArtist} onClose={() => setShareOpen(false)} />
