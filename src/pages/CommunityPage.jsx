@@ -1,39 +1,69 @@
 import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { avatarColor } from '../data/mockData';
+import CommentsSection from '../components/CommentsSection';
 
-function UserAvatar({ username, size = 'sm' }) {
+// ── Sub-components ────────────────────────────────────────────────────────────
+
+function UserAvatar({ username, photo, size = 'sm' }) {
   const bg      = avatarColor(username);
-  const initial = username?.[0]?.toUpperCase() || '?';
+  const initial = (username || '?')[0].toUpperCase();
   const sz      = size === 'sm' ? 32 : 44;
+  if (photo) return <img src={photo} alt={username} style={{ width: sz, height: sz, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />;
   return (
-    <div className={`avatar avatar-${size}`} style={{ width: sz, height: sz, background: bg, flexShrink: 0 }}>
+    <div style={{ width: sz, height: sz, borderRadius: '50%', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: size === 'sm' ? 12 : 18, fontWeight: 800, color: '#fff', flexShrink: 0 }}>
       {initial}
     </div>
   );
 }
 
-function TrendingCard({ post }) {
-  const score = post.upvotes - post.downvotes;
+function Leaderboard({ posts }) {
+  const top5 = [...posts].sort((a, b) => b.upvotes - a.upvotes).slice(0, 5);
+  if (top5.length === 0) return null;
+
   return (
-    <div className="trending-card glass">
-      <img src={post.coverArt} alt={post.songName} className="trending-card-img" />
-      <div className="trending-card-overlay" />
-      <div className="trending-card-info">
-        <div className="trending-card-song">{post.songName}</div>
-        <div className="trending-card-artist">{post.artist}</div>
-        <div className="trending-score">◆ +{score}</div>
-      </div>
+    <div style={{ padding: '0 20px 4px' }}>
+      <p className="section-label">🏆 Gem Leaderboard</p>
+      {top5.map((post, i) => (
+        <div key={post.id} style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          padding: '11px 14px', marginBottom: 8, borderRadius: 14,
+          background: i === 0 ? 'rgba(245,158,11,0.07)' : 'var(--glass)',
+          border: `1px solid ${i === 0 ? 'rgba(245,158,11,0.4)' : 'var(--glass-border)'}`,
+          transition: 'all 0.2s',
+        }}>
+          {/* Rank badge */}
+          <div style={{
+            width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
+            background: i === 0 ? 'var(--gold)' : 'var(--surface-3)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: i === 0 ? 15 : 12, fontWeight: 800,
+            color: i === 0 ? '#0a0a0a' : 'var(--text-muted)',
+          }}>
+            {i === 0 ? '🔥' : `#${i + 1}`}
+          </div>
+          {/* Song / artist */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{post.songName}</div>
+            <div style={{ fontSize: 12, color: 'var(--purple-light)', fontWeight: 600, marginTop: 1 }}>{post.artist}</div>
+          </div>
+          {/* Upvotes */}
+          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+            <div style={{ fontSize: 15, fontWeight: 800, color: i === 0 ? 'var(--gold)' : 'var(--text)' }}>▲ {post.upvotes}</div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
 
-function PostCard({ post, onVote }) {
+function PostCard({ post, onVote, username, userPhoto }) {
   const score = post.upvotes - post.downvotes;
   return (
-    <div className="glass glass-hover post-card">
+    <div className="glass post-card" style={{ marginBottom: 12 }}>
       <div className="post-header">
-        <img src={post.coverArt} alt={post.songName} className="post-cover" />
+        <img src={post.coverArt} alt={post.songName} className="post-cover"
+          onError={(e) => { e.target.style.display = 'none'; }} />
         <div className="post-meta">
           <div className="post-song">{post.songName}</div>
           <div className="post-artist">{post.artist}</div>
@@ -41,9 +71,9 @@ function PostCard({ post, onVote }) {
       </div>
 
       <div className="post-submitter">
-        <UserAvatar username={post.submitter} size="sm" />
-        <span className="post-submitter-name">@{post.submitter}</span>
-        <span className="post-time">{post.commentCount} comments</span>
+        <UserAvatar username={post.submitter === 'you' ? username : post.submitter}
+          photo={post.submitter === 'you' ? userPhoto : null} size="sm" />
+        <span className="post-submitter-name">@{post.submitter === 'you' ? (username || 'you') : post.submitter}</span>
       </div>
 
       <div className="gem-label-row">
@@ -60,17 +90,24 @@ function PostCard({ post, onVote }) {
           +{score} gems
         </div>
       </div>
+
+      {/* Comments section */}
+      <div style={{ marginTop: 12 }}>
+        <CommentsSection postId={post.id} />
+      </div>
     </div>
   );
 }
 
+// ── Page ──────────────────────────────────────────────────────────────────────
 export default function CommunityPage() {
-  const { communityPosts, addPost, votePost } = useApp();
+  const { communityPosts, addPost, votePost, profile, user } = useApp();
   const [modalOpen, setModalOpen] = useState(false);
-  const [form, setForm] = useState({ songName: '', artist: '', reason: '' });
-
-  const trending = [...communityPosts].sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes)).slice(0, 3);
+  const [form, setForm]           = useState({ songName: '', artist: '', reason: '' });
   const set = (f) => (e) => setForm((p) => ({ ...p, [f]: e.target.value }));
+
+  const username  = profile.username || user?.name || 'anonymous';
+  const userPhoto = profile.avatar   || user?.photo || null;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -96,40 +133,29 @@ export default function CommunityPage() {
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto' }}>
-        {/* Trending — only shown when there are posts to trend */}
-        {trending.length > 0 && (
+        {/* Leaderboard — visible when there are posts */}
+        {communityPosts.length > 0 && (
           <>
-            <div style={{ paddingBottom: 4 }}>
-              <div style={{ padding: '0 20px 10px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>🔥 Trending This Week</span>
-              </div>
-              <div className="trending-scroll">
-                {trending.map((post) => <TrendingCard key={post.id} post={post} />)}
-              </div>
-            </div>
-            <div className="divider" style={{ marginBottom: 16 }} />
+            <Leaderboard posts={communityPosts} />
+            <div className="divider" style={{ margin: '12px 0 16px' }} />
           </>
         )}
 
-        {/* All posts — or empty state */}
+        {/* Feed */}
         <div style={{ padding: '0 20px 100px' }}>
           {communityPosts.length > 0 ? (
             <>
               <p className="section-label" style={{ marginBottom: 12 }}>All Gems</p>
               {communityPosts.map((post) => (
-                <PostCard key={post.id} post={post} onVote={votePost} />
+                <PostCard key={post.id} post={post} onVote={votePost} username={username} userPhoto={userPhoto} />
               ))}
             </>
           ) : (
             <div className="empty-state" style={{ paddingTop: 48 }}>
               <span className="gem-pulse empty-icon" style={{ fontSize: 44 }}>◆</span>
               <div className="empty-title">No gems yet</div>
-              <p className="empty-sub">
-                Songs are being added soon —<br />check back shortly!
-              </p>
-              <div className="coming-soon-badge" style={{ marginTop: 8 }}>
-                Be the first to submit one ↓
-              </div>
+              <p className="empty-sub">Songs are being added soon —<br />check back shortly!</p>
+              <div className="coming-soon-badge" style={{ marginTop: 8 }}>Be the first to submit one ↓</div>
             </div>
           )}
         </div>
@@ -142,19 +168,15 @@ export default function CommunityPage() {
           <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
             <div className="modal-handle" />
             <div className="modal-title">Share a Hidden <span className="gradient-text">Gem</span></div>
-
             <form onSubmit={handleSubmit}>
               <label className="field-label">Song Name</label>
               <input className="input" style={{ marginBottom: 14 }} placeholder="Track title..." value={form.songName} onChange={set('songName')} />
-
               <label className="field-label">Artist</label>
               <input className="input" style={{ marginBottom: 14 }} placeholder="Artist name..." value={form.artist} onChange={set('artist')} />
-
               <label className="field-label">Why it's a gem</label>
               <textarea className="input" style={{ marginBottom: 20 }} placeholder="Tell us what makes this track special..." value={form.reason} onChange={set('reason')} />
-
               <button type="submit" className="btn btn-purple" style={{ width: '100%', marginBottom: 10 }}>◆ Submit Gem</button>
-              <button type="button" className="btn btn-ghost"  style={{ width: '100%' }} onClick={() => setModalOpen(false)}>Cancel</button>
+              <button type="button" className="btn btn-ghost" style={{ width: '100%' }} onClick={() => setModalOpen(false)}>Cancel</button>
             </form>
           </div>
         </div>

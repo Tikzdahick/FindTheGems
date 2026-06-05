@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import Layout from './components/Layout';
+import AuthScreen from './components/AuthScreen';
 import Onboarding from './components/Onboarding';
 import DiscoverPage from './pages/DiscoverPage';
 import CommunityPage from './pages/CommunityPage';
@@ -10,8 +11,11 @@ import ProfilePage from './pages/ProfilePage';
 import ArtistProfilePage from './pages/ArtistProfilePage';
 
 function AppContent() {
-  const { onboarded } = useApp();
+  const { user, onboarded } = useApp();
+
+  if (!user)      return <AuthScreen />;
   if (!onboarded) return <Onboarding />;
+
   return (
     <Layout>
       <Routes>
