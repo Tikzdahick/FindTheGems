@@ -148,7 +148,8 @@ export default function DiscoverPage() {
     if (!topSong) return;
     // previewUrl is populated by the background useEffect above.
     // If it hasn't arrived yet, fall back to Web Audio chord synthesis.
-    const src     = topSong.previewUrl || topSong.mood || 'Hype';
+    const src = topSong.previewUrl || topSong.mood || 'Hype';
+    console.log('[Play]', topSong.title, '— source:', topSong.previewUrl ? 'Spotify preview URL' : 'Web Audio synthesis (mood: ' + (topSong.mood || 'Hype') + ')');
     const started = playPreview(topSong.id, src, () => setPlayingId(null));
     setPlayingId(started ? topSong.id : null);
   };
