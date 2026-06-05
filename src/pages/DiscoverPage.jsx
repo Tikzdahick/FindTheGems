@@ -112,10 +112,7 @@ export default function DiscoverPage() {
 
   useEffect(() => () => stopPreview(), []);
 
-  if (loading || deck.length === 0) {
-    return <EmptyState streak={streak} discoverProgress={discoverProgress} loading={loading} />;
-  }
-
+  // All hooks must be declared before any early return (Rules of Hooks)
   const showToast = (type) => { setToast(type); setTimeout(() => setToast(null), 900); };
 
   const advanceDeck = useCallback(() => {
@@ -132,6 +129,10 @@ export default function DiscoverPage() {
     setOffset({ x: dir === 'right' ? 650 : -650, y: 0 });
     setTimeout(() => { setOffset({ x: 0, y: 0 }); advanceDeck(); setAnimating(false); }, 360);
   }, [animating, topSong, saveSong, advanceDeck]);
+
+  if (loading || deck.length === 0) {
+    return <EmptyState streak={streak} discoverProgress={discoverProgress} loading={loading} />;
+  }
 
   const onPointerDown = (e) => {
     if (animating) return;
